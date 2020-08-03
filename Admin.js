@@ -1,3 +1,4 @@
+
 Admins = ["Edge.", "simulated_1", "Player1"] // put here random users for admin lol
 BannedUsers = []
 
@@ -189,7 +190,7 @@ Game.command("ban", (caller, args) => {
             return caller.topPrint("You cant ban yourself!")
         }
         else {
-            caller.topPrint(`Banning user ${P}...`, 3)
+            caller.topPrint(`Banning user ${P.username}...`, 3)
             BannedUsers.push(P.username)
             P.kick(`You've been banned by ${caller.username}\nReason of Ban: ${args[1]} `)
         }

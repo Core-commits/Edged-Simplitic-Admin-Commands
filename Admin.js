@@ -1,5 +1,3 @@
-const { pickSpawn } = require("node-hill/dist/scripts")
-
 Admins = ["Edge.", "simulated_1", "Player1"] // put here random users for admin lol
 BannedUsers = []
 
@@ -83,7 +81,6 @@ Made by Edged. More Coming Soon.
 
 
 
-// Teleport Command ez ez ez 
 Game.command("commands", (caller, args) => {
     if (Admins.includes(caller.username)) {
         console.log(Help)
@@ -95,11 +92,12 @@ Game.command("change", (caller, args) => {
     if (Admins.includes(caller.username)) {
         args = args.split(" ")
         let P = getPlayer(args[0])
-        console.log(caller.username+ " is changing "+  args[0]+ " Score to "+ args[1])
+        console.log(caller.username + " is changing " + args[0] + " Score to " + args[1])
         return P.setScore(args[1])
 
 
     }
+    else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5);
 })
 
 
@@ -107,8 +105,8 @@ Game.command("admin", (caller, args) => {
     if (Admins.includes(caller.username)) {
         if (caller.username == args) return caller.topPrint("You cant admin yourself again lol.")
         let P = getPlayer(args)
-        caller.topPrint(`User ${args.username} is now an Administrator.`, 5)
-        return Admins.push(args.username)
+        caller.topPrint(`User ${P.username} is now an Administrator.`, 5)
+        return Admins.push(P.username)
     }
     else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 
@@ -117,8 +115,8 @@ Game.command("unadmin", (caller, args) => {
     if (Admins.includes(caller.username)) {
         if (caller.username == args) return caller.topPrint("You cant unadmin yourself.")
         let P = getPlayer(args)
-        caller.topPrint(`User ${args.username} is no longer an administrator.`, 5)
-        return Admins.push(args.username)
+        caller.topPrint(`User ${P.username} is no longer an administrator.`, 5)
+        return Admins.push(P.username)
     }
     else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 
@@ -148,7 +146,7 @@ Game.command("b", (caller, args) => {
 })
 
 
-// Here i let the player go to himself cuz well i mean not much bothering.
+// Teleport Command ez ez ez 
 Game.command("to", (caller, args) => {
     if (Admins.includes(caller.username)) {
         let P = getPlayer(args);
@@ -182,7 +180,7 @@ Game.command("bring", (caller, args) => {
 
 
 Game.command("ban", (caller, args) => {
-    
+
     if (Admins.includes(caller.username)) {
         args = args.split(" ")
         let P = getPlayer(args[0])

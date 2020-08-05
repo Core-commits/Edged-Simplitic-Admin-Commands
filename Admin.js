@@ -1,4 +1,4 @@
-const Ver = "V1.6.2"
+const Ver = "V1.6.1x"
 const Developer = "Edge."
 
 const ChatLogs = false
@@ -354,7 +354,7 @@ Game.command("unban", (caller, args) => {
 
 Game.command("shutdown", (caller, args) => {
     if (Admins.includes(caller.username)) {
-        return game.shutdown()
+        return Game.shutdown()
 
     } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 

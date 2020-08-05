@@ -10,7 +10,7 @@ A simple but effective admin commands.
 `npm i fs`
 
 3. Add this to your sandbox:
-
+![](https://media.discordapp.net/attachments/737259728899539004/740582676108542062/unknown.png?width=686&height=425)
 ```js
 fs: require("fs")
 ```

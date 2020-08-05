@@ -1,14 +1,3 @@
-
-// Add "ALL" arguments to the damn script
-
-
-
-
-
-
-
-
-
 const Ver = "V1.5.0x"
 const Developer = "Edge."
 
@@ -16,18 +5,16 @@ const Developer = "Edge."
 console.log(`Thanks for using Edged Admin Commands!\nCurrent Version: ${Ver}`)
 
 
-Admins = ["Edge.", "simulated_1", "Player1"] // put here random users for admin lol
-BannedUsers = []
-const IPBANS = [] //put ips to automatically ipban here
+const Admins = ["Edge.", "simulated_1", "Player1"]
+const BannedUsers = []
+const IPBANS = []
 const SAFEIPS = ["127.0.0.1"]
 
 Game.setMaxListeners(50) // Important to avoid future memory leaks
 
 
-// Giving more memory
 
 function getPlayer(name) {
-    //totally not copied from cheats admin v2 because it works.
     for (let player of Game.players) {
         if (player.username.toLowerCase().indexOf(String(name).toLowerCase()) == 0) {
             const victim = Array.from(Game.players).find(p => p.username === player.username)
@@ -48,7 +35,6 @@ function removeA(arr) {
     }
     return arr;
 }
-// Check if the user is admin
 
 function CheckAdmin(User) {
     if (Admins.includes(User)) {
@@ -65,18 +51,16 @@ function CheckAdmin(User) {
 }
 
 
-// Commands:
 
 
-// IPBanning
 Game.on("playerJoin", (p) => {
     if (IPBANS.includes(p.socket.IPV4)) return p.kick("You are IP banned")
 })
 
 Game.command("ipban", (p, m) => {
-    if (Admins.includes(p.username)) { // Change YOURUSERID with your user id.
+    if (Admins.includes(p.username)) {
         const v = getPlayer(m);
-        if (!v) return;
+        if (!v) return p.prompt("Player not found!");
 
         if (v.socket.IPV4 == p.socket.IPV4 || SAFEIPS.includes(v.socket.IPV4)) return p.message("Unable to IP ban. This IP is in the SAFEIPS array, or is your own IP.")
 
@@ -107,43 +91,15 @@ Game.command("edge", (p, m) => {
 })
 
 Game.command("unipban", (p, ip) => {
-    if (Admins.includes(p.username)) { //Change USERID with your respective id.
+    if (Admins.includes(p.username)) {
         if (IPBANS.includes(ip)) {
             IPBANS.splice(IPBANS.indexOf(ip), 1)
             console.log(`Unbanned IP: ${ip}`)
         }
     }
 })
-// DISCO! Command.
-OldBricks = []
-const months = ["#b023c7", "#dc9a76", "#e9a130", "#dda957", "#5b1dab", "#2adf03", "#d2198e"];
-
-let random = Math.floor(Math.random() * months.length);
-console.log(months[random]);
-Game.command("Disco", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        if (args == "all") {
-            for (let player of Game.players) {
-                let outfit = new Outfit(player)
-                    // Sets all player colors to "#ffffff"
-                    .body(Math.floor(Math.random() * months.length))
-                    // Sets the head color (body colors are still changed!)
-                    .head(Math.floor(Math.random() * months.length))
-                    // Replicate the changes to the players.
-                    player.setOutfit(outfit)
-
-                // Alternatively, you can use: p.setOutfit(outfit)
 
 
-
-            }
-        }
-
-    }
-    else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
-
-})
-// Kick command
 
 Game.command("kick", (caller, args) => {
     if (Admins.includes(caller.username)) {
@@ -194,7 +150,7 @@ Game.command("change", (caller, args) => {
 
 Game.command("alertall", (caller, args) => {
     if (Admins.includes(caller.username)) {
-        for(let P of game.players){
+        for(let P of Game.players){
             P.prompt(args)
         }
 
@@ -203,7 +159,7 @@ Game.command("alertall", (caller, args) => {
 })
 
 
-Game.command("kill", (caller, args) => { // kill go brrrr
+Game.command("kill", (caller, args) => {
     if (Admins.includes(caller.username)) {
         args = args.split(" ")
         let P = getPlayer(args[0])
@@ -268,35 +224,41 @@ Game.command("b", (caller, args) => {
 })
 
 
-// Teleport Command ez ez ez
 Game.command("skydive", (caller, args) => {
     if (Admins.includes(caller.username)) {
         let P = getPlayer(args);
         if (args == "all"){
-          for (let P of game.Players){
-            P.setPosition(new Vector3(P.position.x, P.position.y, P.position.z + 100)) //Offsets work for god sake
+          for (let P of Game.players){
+            P.setPosition(new Vector3(P.position.x, P.position.y, P.position.z + 100))
 
           }
         }
         if (P == undefined || P == " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
         caller.topPrint(`Skydiving`, 3);
         CallerPos = caller.position;
-        P.setPosition(new Vector3(P.position.x, P.position.y, P.position.z + 100)) //Offsets work for god sake
+        P.setPosition(new Vector3(P.position.x, P.position.y, P.position.z + 100))
     }
     else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 
 })
-// Teleport Command ez ez ez
+
+
+
+// Teleport Command
 Game.command("to", (caller, args) => {
-    if (Admins.includes(caller.username)) {
+    if (Admins.includes(caller.username)) { // If the caller username is on the admin list.
         let P = getPlayer(args);
-        if (P == undefined || P == " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
+        if (P == undefined || P == " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3) //If the user doesnt exist....
         caller.topPrint(`Teleporting to ${P.username}`, 3);
         CallerPos = caller.position;
-        caller.setPosition(new Vector3(P.position.x, P.position.y, P.position.z)) //Offsets work for god sake
+        caller.setPosition(new Vector3(P.position.x, P.position.y, P.position.z))
     }
+    else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5) // If he's not in the admin list return this.
 
 })
+
+
+
 
 Game.command("bring", (caller, args) => {
     let  CallerPos = caller.position;
@@ -322,7 +284,9 @@ Game.command("bring", (caller, args) => {
     }
 
 })
-// Ban Command
+
+
+
 
 
 Game.command("ban", (caller, args) => {
@@ -344,6 +308,9 @@ Game.command("ban", (caller, args) => {
 
 })
 
+
+
+
 Game.command("unban", (caller, args) => {
     if (Admins.includes(caller.username)) {
         if (BannedUsers.includes(args)) {
@@ -355,6 +322,9 @@ Game.command("unban", (caller, args) => {
     else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 
 })
+
+
+
 
 Game.command("shutdown", (caller, args) => {
     if (Admins.includes(caller.username)) {
@@ -368,11 +338,17 @@ Game.command("shutdown", (caller, args) => {
 })
 
 
+
+
+
 Game.on("playerJoin", (player) => {
     if (BannedUsers.includes(player.username)) {
         return player.kick("You're banned")
     }
 })
+
+
+
 
 Game.on("playerJoin", (player) => {
 
@@ -380,7 +356,6 @@ Game.on("playerJoin", (player) => {
         player.on("avatarLoaded", () => {
             return player.topPrint(`Welcome ${player.username} You're an administrator.`, 10)
 
-            // The outfit is now loaded.
         })
 
 

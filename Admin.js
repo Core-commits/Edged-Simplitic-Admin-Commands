@@ -4,6 +4,7 @@ const Developer = "Edge."
 
 console.log(`Thanks for using Edged Admin Commands!\nCurrent Version: ${Ver}`)
 
+const cTable = require('console.table');
 
 const Admins = ["Edge.", "simulated_1", "Player1"]
 const BannedUsers = []
@@ -36,6 +37,7 @@ Game.command("logs", (caller, args) => {
     if (Admins.includes(caller.username)) {
         console.log(MessageLog) // TODO: Add Logs saving to txt file... fs?
         caller.prompt("All the logs are on your console.")
+        console.table(MessageLog);
     } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 
 })
@@ -290,21 +292,20 @@ Game.command("bring", (caller, args) => {
         for (let Player of Game.players) {
             Player.setPosition(new Vector3(CallerPost.x, CallerPos.y, CallerPost.z))
         }
-        if (Admins.includes(caller.username)) {
-            let P = getPlayer(args);
-            if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
-
-        }
-        if (P.username == caller.username) return caller.topPrint("You cant Bring yourself!", 3)
         else {
             caller.topPrint(`Bringing Player ${P.username}`, 5)
             P.setPosition(new Vector3(CallerPos.x, CallerPos.y, CallerPos.z))
 
         }
+        if (Admins.includes(caller.username)) {
+            let P = getPlayer(args);
+            if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
 
-    } else {
-        return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+        }else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+        if (P.username == caller.username) return caller.topPrint("You cant Bring yourself!", 3)
     }
+
+
 
 })
 

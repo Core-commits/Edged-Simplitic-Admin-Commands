@@ -1,4 +1,4 @@
-const Ver = "V1.6.1x"
+const Ver = "V1.6.2"
 const Developer = "Edge."
 
 const ChatLogs = false
@@ -322,6 +322,16 @@ Game.command("mute", (caller, args) => {
         let VICTIM = getPlayer(args)
         VICTIM.muted = true
         return caller.topPrint(`Player ${VICTIM.username} is now muted.`)
+
+    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+
+})
+
+Game.command("mute", (caller, args) => {
+    if (Admins.includes(caller.username)) {
+        let VICTIM = getPlayer(args)
+        VICTIM.muted = false
+        return caller.topPrint(`Player ${VICTIM.username} is now unmuted.`)
 
     } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 

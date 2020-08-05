@@ -17,6 +17,7 @@ Game.on("playerJoin", async(p) => {
 
 
 Game.on("chat", async (player, message) => {
+	let hasVIP = await player.ownsAsset(vipitem)
     if (player.admin && hasVIP){
         Game.messageAll("[BH Admin Abuser][Donator] "+ player.username+ ":[#ffffff] "+ message)
 	}
@@ -33,7 +34,7 @@ Game.on("chat", async (player, message) => {
 
     }
     else if (hasVIP){
-        Game.messageAll("[#fffb00][Simp][Donator] "+player.username+":[#ffffff] "+message)
+        Game.messageAll("[55e0a3][Simp][Donator] "+player.username+":[#ffffff] "+message)
 	}
 	else{
 		Game.messageAll("[#fffb00][Simp] "+player.username+":[#ffffff] "+message)

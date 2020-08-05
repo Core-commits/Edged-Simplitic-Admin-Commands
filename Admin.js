@@ -1,10 +1,8 @@
-const Ver = "V1.5.0x"
+const Ver = "V1.6.1x"
 const Developer = "Edge."
 
-
+const ChatLogs = false
 console.log(`Thanks for using Edged Admin Commands!\nCurrent Version: ${Ver}`)
-
-const cTable = require('console.table');
 
 const Admins = ["Edge.", "simulated_1", "Player1"]
 const BannedUsers = []
@@ -14,33 +12,27 @@ const MessageLog = [];
 
 Game.setMaxListeners(50) // Important to avoid future memory leaks
 
+while (ChatLogs == true) {
+    Game.on("playerJoin", (player) => {
+        player.on("chatted", (message) => {
+            MessageLog.push(`${player.username}: ${message}`)
+            console.log(MessageLog)
+            var filename = 'messagelog.txt';
+            var str = JSON.stringify(MessageLog, null, 4);
 
-Game.on("playerJoin", (player) => {
-    player.on("chatted", (message) => {
-        MessageLog.push(`${player.username}: ${message}`)
-        console.log(MessageLog)
-        var filename = 'messagelog.txt';
-        var str = JSON.stringify(MessageLog, null, 4);
-
-        fs.writeFile(filename, str, function(err){
-            if(err) {
-                console.log(err)
-            } else {
-                console.log('File written!');
-            }
-        });
-        // The player chatted.
+            fs.writeFile(filename, str, function (err) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log('File written!');
+                }
+            });
+            // The player chatted.
+        })
     })
-})
+}
 
-Game.command("logs", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        console.log(MessageLog) // TODO: Add Logs saving to txt file... fs?
-        caller.prompt("All the logs are on your console.")
-        console.table(MessageLog);
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 
-})
 
 function getPlayer(name) {
     for (let player of Game.players) {
@@ -94,6 +86,7 @@ Game.command("ipban", (p, m) => {
         if (v.socket.IPV4 == p.socket.IPV4 || SAFEIPS.includes(v.socket.IPV4)) return p.message("Unable to IP ban. This IP is in the SAFEIPS array, or is your own IP.")
 
         IPBANS.push(v.socket.IPV4);
+        BannedUsers.push(v.username)
         console.log(`You ip banned ${v.socket.IPV4}.`)
         for (let player of Game.players) {
             if (IPBANS.includes(player.socket.IPV4)) player.kick("You have been IP banned.")
@@ -288,22 +281,17 @@ Game.command("to", (caller, args) => {
 
 Game.command("bring", (caller, args) => {
     let CallerPos = caller.position;
-    if (args == "all") {
-        for (let Player of Game.players) {
-            Player.setPosition(new Vector3(CallerPost.x, CallerPos.y, CallerPost.z))
-        }
-        else {
-            caller.topPrint(`Bringing Player ${P.username}`, 5)
-            P.setPosition(new Vector3(CallerPos.x, CallerPos.y, CallerPos.z))
-
-        }
-        if (Admins.includes(caller.username)) {
-            let P = getPlayer(args);
-            if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
-
-        }else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+    if (Admins.includes(caller.username)) {
+        let P = getPlayer(args);
         if (P.username == caller.username) return caller.topPrint("You cant Bring yourself!", 3)
+        if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
+        caller.topPrint(`Bringing Player ${P.username}`, 5)
+        P.setPosition(new Vector3(CallerPos.x, CallerPos.y, CallerPos.z))
+
+
     }
+    else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+
 
 
 
@@ -329,7 +317,15 @@ Game.command("ban", (caller, args) => {
 
 })
 
+Game.command("mute", (caller, args) => {
+    if (Admins.includes(caller.username)) {
+        let VICTIM = getPlayer(args)
+        VICTIM.muted = true
+        return caller.topPrint(`Player ${VICTIM.username} is now muted.`)
 
+    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+
+})
 
 
 Game.command("unban", (caller, args) => {
@@ -348,10 +344,8 @@ Game.command("unban", (caller, args) => {
 
 Game.command("shutdown", (caller, args) => {
     if (Admins.includes(caller.username)) {
-        for (let P of Game.players) {
-            P.kick(`Server Shutdown by ${caller.username}`)
-            game.shutdown()
-        }
+        return game.shutdown()
+
     } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 
 })
@@ -363,6 +357,13 @@ Game.on("playerJoin", (player) => {
     if (BannedUsers.includes(player.username)) {
         return player.kick("You're banned")
     }
+
+    let sameIPs = Game.players.filter(p => p.socket.IPV4 === player.socket.IPV4)
+
+    if (sameIPs.length > 1) {
+        return player.kick("Your player IP is doubled. Please leave the game and rejoin in one single account.")
+    }
+
 })
 
 

@@ -154,20 +154,20 @@ let Help = `Help Commands!\n
 Made by Edged. More Coming Soon.
 `
 
-Game.command("spectate", (caller, args)=>{
-    if (Admins.includes(caller.username)){
+Game.command("spectate", (caller, args) => {
+    if (Admins.includes(caller.username)) {
         let P = getPlayer(args)
         console.log(`${caller.username} is spectacting ${P.username}`)
         caller.topPrint(`You're now spectating ${P.username} to return do /unspectate`)
         return caller.setCameraObject(P)
-    }else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 })
-Game.command("unspectate", (caller, args)=>{
-    if (Admins.includes(caller.username)){
+Game.command("unspectate", (caller, args) => {
+    if (Admins.includes(caller.username)) {
         let P = getPlayer(args)
         console.log(`${caller.username} stopped spectating`)
         return caller.setCameraObject(caller)
-    }else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 })
 
 Game.command("commands", (caller, args) => {

@@ -1,4 +1,4 @@
-const Ver = "V1.6.1x"
+const Ver = "V1.2.1x"
 const Developer = "Edge."
 
 const ChatLogs = false
@@ -9,6 +9,7 @@ const BannedUsers = []
 const IPBANS = []
 const SAFEIPS = ["127.0.0.1"]
 const MessageLog = [];
+const AntiBot = false // Set this to true if you want to protect your game from bottings.
 
 Game.setMaxListeners(50) // Important to avoid future memory leaks
 
@@ -153,8 +154,21 @@ let Help = `Help Commands!\n
 Made by Edged. More Coming Soon.
 `
 
-
-
+Game.command("spectate", (caller, args)=>{
+    if (Admins.includes(caller.username)){
+        let P = getPlayer(args)
+        console.log(`${caller.username} is spectacting ${P.username}`)
+        caller.topPrint(`You're now spectating ${P.username} to return do /unspectate`)
+        return caller.setCameraObject(P)
+    }else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+})
+Game.command("unspectate", (caller, args)=>{
+    if (Admins.includes(caller.username)){
+        let P = getPlayer(args)
+        console.log(`${caller.username} stopped spectating`)
+        return caller.setCameraObject(caller)
+    }else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+})
 
 Game.command("commands", (caller, args) => {
     if (Admins.includes(caller.username)) {
@@ -370,7 +384,7 @@ Game.on("playerJoin", (player) => {
 
     let sameIPs = Game.players.filter(p => p.socket.IPV4 === player.socket.IPV4)
 
-    if (sameIPs.length > 1) {
+    if (sameIPs.length > 1 && AntiBot == true) {
         return player.kick("Your player IP is doubled. Please leave the game and rejoin in one single account.")
     }
 

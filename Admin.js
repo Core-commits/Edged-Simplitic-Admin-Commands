@@ -10,19 +10,19 @@ const Admins = ["Edge.", "simulated_1", "Player1"] // Put here Mafia bosses
 const BannedUsers = [] // Put here dummy people
 const IPBANS = [] // Put here IP's that you know are spicy af
 const SAFEIPS = ["127.0.0.1"] // Put here Ip's that are safe form the IPBan command.
-const AntiBot = false // Set this to true if you want to protect your game from bottings.
-const ChatLogs = false 
-
+const AntiBot = true // Set this to true if you want to protect your game from bottings.
+const ChatLogs = true 
+const ChatToConsole = false
 
 // Messages Array && MaxEvenListeners
 const MessageLog = [];
 Game.setMaxListeners(50) 
 
-while (ChatLogs == true) {
+if (ChatLogs == true) {
     Game.on("playerJoin", (player) => {
         player.on("chatted", (message) => {
             MessageLog.push(`${player.username}: ${message}`)
-            console.log(MessageLog)
+            if (ChatToConsole==true){console.log(MessageLog)}
             var filename = 'messagelog.txt';
             var str = JSON.stringify(MessageLog, null, 4);
 
@@ -30,7 +30,6 @@ while (ChatLogs == true) {
                 if (err) {
                     console.log(err)
                 } else {
-                    console.log('File written!');
                 }
             });
         })
@@ -409,8 +408,6 @@ Game.on("playerJoin", (player) => {
     }
 
 })
-
-
 
 
 Game.on("playerJoin", (player) => {

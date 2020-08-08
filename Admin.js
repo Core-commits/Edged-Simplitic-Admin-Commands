@@ -1,4 +1,4 @@
-const Ver = "V1.3.2y"
+const Ver = "V1.3.3y"
 const Developer = "Edge."
 
 console.log(`Thanks for using Edged Admin Commands!\nCurrent Version: ${Ver}`)
@@ -13,7 +13,6 @@ const SAFEIPS = ["127.0.0.1"] // Put here Ip's that are safe form the IPBan comm
 const AntiBot = true // Set this to true if you want to protect your game from bottings.
 const ChatLogs = true
 const ChatToConsole = false
-const WhoIs = false
 
 // Messages Array && MaxEvenListeners
 const MessageLog = [];
@@ -48,14 +47,6 @@ function getPlayer(name) {
     }
 }
 
-if (whois == true) {
-    whois.lookup('google.com', function (err, data) {
-        console.log(data)
-        if (err) {
-            console.log(err)
-        }
-    })
-}
 
 // Function to easily remove values from arrays
 function removeA(arr) {

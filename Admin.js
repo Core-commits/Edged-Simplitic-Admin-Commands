@@ -1,7 +1,5 @@
-const Ver = "V1.3.3y"
-const Developer = "Edge."
-
-console.log(`Thanks for using Edged Admin Commands!\nCurrent Version: ${Ver}`)
+const Ver = "V1.4.2.x"
+const Developer = "Edge, Dragonian and Talveka"
 
 
 // ------------------ SETTINGS -------------//
@@ -10,7 +8,10 @@ const Admins = ["Edge.", "simulated_1", "Player1"] // Put here Mafia bosses
 const BannedUsers = [] // Put here dummy people
 const IPBANS = [] // Put here IP's that you know are spicy af
 const SAFEIPS = ["127.0.0.1"] // Put here Ip's that are safe form the IPBan command.
-const AntiBot = true // Set this to true if you want to protect your game from bottings.
+const Message = "This game uses Edged's Administration Utilities."
+Game.MOTD = Message
+// *--------------------- ON / OFF SETTINGS ----------------------* //
+const AntiBot = false // Set this to true if you want to protect your game from bottings.
 const ChatLogs = true
 const ChatToConsole = false
 
@@ -36,6 +37,30 @@ if (ChatLogs == true) {
     })
 }
 
+// mAKING THE VALIDATOR FUNCTION FOR IS ADMIN
+function isAdmin(p, args, next) {
+    if (Admins.includes(p.username)) return next(p, args)
+
+    p.topPrint(`${p.username} you're not an administrator!`)
+}
+
+
+
+
+
+
+
+
+
+
+// Let me help you.
+let Help = `Help Commands!\n
+/ban Player || Bans the user from the server.\n
+/kick Player || Kicks the player from the server.\n
+/to Player || Teleports yourself to the player position\n
+\n
+Made by Edged. More Coming Soon.
+`
 
 // Function to get player from the player array. Useful and made by Cheats (thx man)
 function getPlayer(name) {
@@ -105,17 +130,17 @@ Game.command("ipban", (p, m) => {
 
 })
 // unipban 
-Game.command("unipban", (p, ip) => {
-    if (Admins.includes(p.username)) {
-        if (IPBANS.includes(ip)) {
-            IPBANS.splice(IPBANS.indexOf(ip), 1)
-            console.log(`Unbanned IP: ${ip}`)
-        }
+Game.command("unipban", isAdmin, (p, ip) => {
+
+    if (IPBANS.includes(ip)) {
+        IPBANS.splice(IPBANS.indexOf(ip), 1)
+        console.log(`Unbanned IP: ${ip}`)
     }
+
 })
 // Setavatar command.
 
-Game.command("setavatar", (p, m) => {
+Game.command("setavatar", isAdmin, (p, m) => {
     p.setAvatar(m)
     p.topPrint(`User: ${p.username} avatar is now ${m}`)
 
@@ -130,244 +155,195 @@ Game.command("info", (p, m) => {
 
 
 // Change User size
-Game.command("size", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        args = args.split(" ")
-        let P = getPlayer(args[0])
-        console.log(caller.username + " is changing " + args[0] + " size to " + args[1])
-        return P.setScale(new Vector3(P.scale.x = args[1], P.scale.y = args[1], P.scale.z = args[1]))
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("size", isAdmin, (caller, args) => {
+    args = args.split(" ")
+    let P = getPlayer(args[0])
+    console.log(caller.username + " is changing " + args[0] + " size to " + args[1])
+    return P.setScale(new Vector3(P.scale.x = args[1], P.scale.y = args[1], P.scale.z = args[1]))
 
 })
-Game.command("hat1", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        args = args.split(" ")
-        let P = getPlayer(args[0])
-        let outfit = new Outfit(P)
-            .hat1(args[1])
-            .set()
+Game.command("hat1", isAdmin, (caller, args) => {
+    args = args.split(" ")
+    let P = getPlayer(args[0])
+    let outfit = new Outfit(P)
+        .hat1(args[1])
+        .set()
 
 
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
-
-})
-Game.command("hat2", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        args = args.split(" ")
-        let P = getPlayer(args[0])
-        let outfit = new Outfit(P)
-            .hat2(args[1])
-            .set()
-
-
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 
 })
 
-Game.command("hat3", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        args = args.split(" ")
-        let P = getPlayer(args[0])
-        let outfit = new Outfit(P)
-            .hat3(args[1])
-            .set()
+Game.command("hat2", isAdmin, (caller, args) => {
+    args = args.split(" ")
+    let P = getPlayer(args[0])
+    let outfit = new Outfit(P)
+        .hat2(args[1])
+        .set()
 
 
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+
+})
+
+Game.command("hat3", isAdmin, (caller, args) => {
+    args = args.split(" ")
+    let P = getPlayer(args[0])
+    let outfit = new Outfit(P)
+        .hat3(args[1])
+        .set()
+
+
 
 })
 
 
-Game.command("fov", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        args = args.split(" ")
-        let P = getPlayer(args[0])
-        P.topPrint(`Player ${P.username} Fov has been set to ${args[1]}`)
-        return P.setCameraFOV(args[1])
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("fov", isAdmin, (caller, args) => {
+    args = args.split(" ")
+    let P = getPlayer(args[0])
+    P.topPrint(`Player ${P.username} Fov has been set to ${args[1]}`)
+    return P.setCameraFOV(args[1])
 
 })
 
-Game.command("jumpforce", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        args = args.split(" ")
-        let P = getPlayer(args[0])
-        caller.topPrint(`Player ${P.username} jumpforce is now ${P.jumpPower}`, 3)
-        return P.setJumpPower(args[1])
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("jumpforce", isAdmin, (caller, args) => {
+    args = args.split(" ")
+    let P = getPlayer(args[0])
+    caller.topPrint(`Player ${P.username} jumpforce is now ${P.jumpPower}`, 3)
+    return P.setJumpPower(args[1])
 
 })
 // /tool PlayerName ToolName ToolID
-Game.command("tool", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        args = args.split(" ")
-        let P = getPlayer(args[0])
-        let tool = new Tool(args[1])
-        tool.model = args[2]
-        return P.equipTool(tool)
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("tool", isAdmin, (caller, args) => {
+    args = args.split(" ")
+    let P = getPlayer(args[0])
+    let tool = new Tool(args[1])
+    tool.model = args[2]
+    return P.equipTool(tool)
 
 })
-Game.command("speed", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        args = args.split(" ")
-        let P = getPlayer(args[0])
-        console.log(caller.username + " is changing " + args[0] + " speed to " + args[1])
-        return P.setSpeed(args[1])
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
-
-})
-// kick a user, soontm will use getplayer() instead of the old dragonian method
-Game.command("kick", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        for (let player of Game.players) {
-            if (player.username.startsWith(args)) {
-                return player.kick(`You were kicked by ${caller.username}`, 5)
-
-            }
-
-        }
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("speed", isAdmin, (caller, args) => {
+    args = args.split(" ")
+    let P = getPlayer(args[0])
+    console.log(caller.username + " is changing " + args[0] + " speed to " + args[1])
+    return P.setSpeed(args[1])
 
 })
 
 // Help information
-let Help = `Help Commands!\n
-/ban Player || Bans the user from the server.\n
-/kick Player || Kicks the player from the server.\n
-/to Player || Teleports yourself to the player position\n
-\n
-Made by Edged. More Coming Soon.
-`
+
+// kick a user, soontm will use getplayer() instead of the old dragonian method
+
+Game.command("kick", isAdmin, (caller, args) => {
+    let P = getPlayer(args)
+    return P.kick(`You've been kicked by ${caller.username}`)
+
+})
+
 // Spectate Command
-Game.command("spectate", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        let P = getPlayer(args)
-        console.log(`${caller.username} is spectacting ${P.username}`)
-        caller.topPrint(`You're now spectating ${P.username} to return do /unspectate`)
-        return caller.setCameraObject(P)
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("spectate", isAdmin, (caller, args) => {
+    let P = getPlayer(args)
+    console.log(`${caller.username} is spectacting ${P.username}`)
+    caller.topPrint(`You're now spectating ${P.username} to return do /unspectate`)
+    return caller.setCameraObject(P)
 })
 
 // Unespectate command
-Game.command("unspectate", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        let P = getPlayer(args)
-        console.log(`${caller.username} stopped spectating`)
-        return caller.setCameraObject(caller)
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("unspectate", isAdmin, (caller, args) => {
+    let P = getPlayer(args)
+    console.log(`${caller.username} stopped spectating`)
+    return caller.setCameraObject(caller)
 })
 
 // Help Print
-Game.command("commands", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        console.log(Help)
+Game.command("commands", isAdmin, (caller, args) => {
+    console.log(Help)
 
-    }
+
 })
 
 // Change values from the score
-Game.command("change", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        args = args.split(" ")
-        let P = getPlayer(args[0])
-        console.log(caller.username + " is changing " + args[0] + " Score to " + args[1])
-        return P.setScore(args[1])
+Game.command("change", isAdmin, (caller, args) => {
+    args = args.split(" ")
+    let P = getPlayer(args[0])
+    console.log(caller.username + " is changing " + args[0] + " Score to " + args[1])
+    return P.setScore(args[1])
 
 
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5);
 })
 
 // Shitty prompt to everyone idk why i made this
-Game.command("alertall", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        for (let P of Game.players) {
-            P.prompt(args)
-        }
+Game.command("alertall", isAdmin, (caller, args) => {
+    for (let P of Game.players) {
+        P.prompt(args)
+    }
 
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5);
 })
 
 // Kill command with support for "kill all" argument.
-Game.command("kill", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        args = args.split(" ")
-        let P = getPlayer(args[0])
-        if (args[0] == "all") {
-            for (let player of Game.players) {
-                player.setHealth(0)
-                console.log(player.username + " has died")
-            }
-        } else return P.setHealth(0)
+Game.command("kill", isAdmin, (caller, args) => {
+    args = args.split(" ")
+    let P = getPlayer(args[0])
+    if (args[0] == "all") {
+        for (let player of Game.players) {
+            player.setHealth(0)
+            console.log(player.username + " has died")
+        }
+    } else return P.setHealth(0)
 
 
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5);
 })
 
 
 // Admin command, simply push the user to admin.
 
-Game.command("admin", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        if (caller.username == args) return caller.topPrint("You cant admin yourself again lol.")
-        let P = getPlayer(args)
-        caller.topPrint(`User ${P.username} is now an Administrator.`, 5)
-        P.topPrint(`${caller.username} gave you Administrator privileges`, 5)
-        return Admins.push(P.username)
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("admin", isAdmin, (caller, args) => {
+    if (caller.username == args) return caller.topPrint("You cant admin yourself again lol.")
+    let P = getPlayer(args)
+    caller.topPrint(`User ${P.username} is now an Administrator.`, 5)
+    P.topPrint(`${caller.username} gave you Administrator privileges`, 5)
+    return Admins.push(P.username)
 
 })
 
 // Unadmin command simply takes the value off the array.
-Game.command("unadmin", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        if (caller.username == args) return caller.topPrint("You cant unadmin yourself.")
-        let P = getPlayer(args)
-        caller.topPrint(`User ${P.username} is no longer an administrator.`, 5)
-        P.topPrint(`${caller.username} took away your admin privileges.`, 5)
-        return Admins.splice(Admins.indexOf(P.username), 1)
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("unadmin", isAdmin, (caller, args) => {
+    if (caller.username == args) return caller.topPrint("You cant unadmin yourself.")
+    let P = getPlayer(args)
+    caller.topPrint(`User ${P.username} is no longer an administrator.`, 5)
+    P.topPrint(`${caller.username} took away your admin privileges.`, 5)
+    return Admins.splice(Admins.indexOf(P.username), 1)
 
 })
 
 // TopPrint, CenterPrint and BottomPrint embedded into commands.
-Game.command("m", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        Game.topPrintAll(`${args}`, 5)
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("m", isAdmin, (caller, args) => {
+    Game.topPrintAll(`${args}`, 5)
 
 })
-Game.command("n", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        Game.centerPrintAll(`${args}`, 5)
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("n", isAdmin, (caller, args) => {
+    Game.centerPrintAll(`${args}`, 5)
 
 })
 
-Game.command("b", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        Game.bottomPrintAll(`${args}`, 5)
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+Game.command("b", isAdmin, (caller, args) => {
+    Game.bottomPrintAll(`${args}`, 5)
 
 })
 
 
 // Fun command to skydive lol
 
-Game.command("skydive", (caller, args) => {
-    if (Admins.includes(caller.username)) {
-        let P = getPlayer(args);
-        if (args == "all") {
-            for (let P of Game.players) {
-                P.setPosition(new Vector3(P.position.x, P.position.y, P.position.z + 100))
+Game.command("skydive", isAdmin, (caller, args) => {
+    let P = getPlayer(args);
+    if (args == "all") {
+        for (let P of Game.players) {
+            P.setPosition(new Vector3(P.position.x, P.position.y, P.position.z + 100))
 
-            }
         }
-        if (P == undefined || P == " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
-        caller.topPrint(`Skydiving`, 3);
-        CallerPos = caller.position;
-        P.setPosition(new Vector3(P.position.x, P.position.y, P.position.z + 100))
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
+    }
+    if (P == undefined || P == " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
+    caller.topPrint(`Skydiving`, 3);
+    CallerPos = caller.position;
+    P.setPosition(new Vector3(P.position.x, P.position.y, P.position.z + 100))
 
 })
 
@@ -375,34 +351,25 @@ Game.command("skydive", (caller, args) => {
 
 // Teleport Command
 
-Game.command("to", (caller, args) => {
-    if (Admins.includes(caller.username)) { // If the caller username is on the admin list.
-        let P = getPlayer(args);
-        if (P == undefined || P == " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3) //If the user doesnt exist....
-        caller.topPrint(`Teleporting to ${P.username}`, 3);
-        CallerPos = caller.position;
-        caller.setPosition(new Vector3(P.position.x, P.position.y, P.position.z))
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5) // If he's not in the admin list return this.
+Game.command("to", isAdmin, (caller, args) => {
+    let P = getPlayer(args);
+    if (P == undefined || P == " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3) //If the user doesnt exist....
+    caller.topPrint(`Teleporting to ${P.username}`, 3);
+    CallerPos = caller.position;
+    caller.setPosition(new Vector3(P.position.x, P.position.y, P.position.z))
 
 })
 
 
 
 // Bring the user command
-Game.command("bring", (caller, args) => {
+Game.command("bring", isAdmin, (caller, args) => {
     let CallerPos = caller.position;
-    if (Admins.includes(caller.username)) {
-        let P = getPlayer(args);
-        if (P.username == caller.username) return caller.topPrint("You cant Bring yourself!", 3)
-        if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
-        caller.topPrint(`Bringing Player ${P.username}`, 5)
-        P.setPosition(new Vector3(CallerPos.x, CallerPos.y, CallerPos.z))
-
-
-    }
-    else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
-
-
+    let P = getPlayer(args);
+    if (P.username == caller.username) return caller.topPrint("You cant Bring yourself!", 3)
+    if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
+    caller.topPrint(`Bringing Player ${P.username}`, 5)
+    P.setPosition(new Vector3(CallerPos.x, CallerPos.y, CallerPos.z))
 
 
 })
@@ -410,7 +377,7 @@ Game.command("bring", (caller, args) => {
 
 
 // Ban the user, it pushes the username of the user to the banned list.
-Game.command("ban", (caller, args) => {
+Game.command("ban", isAdmin, (caller, args) => {
 
     if (Admins.includes(caller.username)) {
         args = args.split(" ", 2)
@@ -427,7 +394,7 @@ Game.command("ban", (caller, args) => {
 
 })
 // Mute command, mute those who should shut up
-Game.command("mute", (caller, args) => {
+Game.command("mute", isAdmin,(caller, args) => {
     if (Admins.includes(caller.username)) {
         let VICTIM = getPlayer(args)
         VICTIM.muted = true
@@ -437,7 +404,7 @@ Game.command("mute", (caller, args) => {
 
 })
 // Unmute the user
-Game.command("unmute", (caller, args) => {
+Game.command("unmute", isAdmin,(caller, args) => {
     if (Admins.includes(caller.username)) {
         let VICTIM = getPlayer(args)
         VICTIM.muted = false
@@ -448,7 +415,7 @@ Game.command("unmute", (caller, args) => {
 })
 
 // Unban someone
-Game.command("unban", (caller, args) => {
+Game.command("unban", isAdmin,(caller, args) => {
     if (Admins.includes(caller.username)) {
         if (BannedUsers.includes(args)) {
             removeA(BannedUsers, args)
@@ -462,7 +429,7 @@ Game.command("unban", (caller, args) => {
 
 
 // shut down the game. Somehow it doesnt work wtf
-Game.command("shutdown", (caller, args) => {
+Game.command("shutdown", isAdmin, (caller, args) => {
     if (Admins.includes(caller.username)) {
         return Game.shutdown()
 
@@ -498,3 +465,6 @@ Game.on("playerJoin", (player) => {
 
     }
 })
+
+
+console.log(`\x1b[31mThanks for using Edged Admin Commands!\n\x1b[37m//Current Version: ${Ver}//\n\x1b[46m\x1b[44mSettings:\x1b[44m\nAntiBotting: ${AntiBot}\nChat Logging: ${ChatLogs}\n Chat to console: ${ChatToConsole}\nAdministrators: ${Admins}\x1b[0m`)

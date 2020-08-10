@@ -13,17 +13,17 @@ Game.MOTD = Message
 // *--------------------- ON / OFF SETTINGS ----------------------* //
 const AntiBot = false // Set this to true if you want to protect your game from bottings.
 const ChatLogs = true
-const ChatToConsole = false
+const ChatToConsole = true
 
 // Messages Array && MaxEvenListeners
 const MessageLog = [];
 Game.setMaxListeners(50)
 
-if (ChatLogs == true) {
+if (ChatLogs === true) {
     Game.on("playerJoin", (player) => {
         player.on("chatted", (message) => {
             MessageLog.push(`${player.username}: ${message}`)
-            if (ChatToConsole == true) { console.log(MessageLog) }
+            if (ChatToConsole === true) { console.log(MessageLog) }
             var filename = 'messagelog.txt';
             var str = JSON.stringify(MessageLog, null, 4);
 
@@ -41,7 +41,7 @@ if (ChatLogs == true) {
 function isAdmin(p, args, next) {
     if (Admins.includes(p.username)) return next(p, args)
 
-    p.topPrint(`${p.username} you're not an administrator!`)
+    p.topPrint(`${p.username} you're not an administrator!`,5)
 }
 
 
@@ -199,7 +199,7 @@ Game.command("hat3", isAdmin, (caller, args) => {
 Game.command("fov", isAdmin, (caller, args) => {
     args = args.split(" ")
     let P = getPlayer(args[0])
-    P.topPrint(`Player ${P.username} Fov has been set to ${args[1]}`)
+    caller.topPrint(`Player ${P.username} Fov has been set to ${args[1]}`)
     return P.setCameraFOV(args[1])
 
 })
@@ -217,12 +217,17 @@ Game.command("tool", isAdmin, (caller, args) => {
     let P = getPlayer(args[0])
     let tool = new Tool(args[1])
     tool.model = args[2]
+    caller.topPrint(`Tool ${args[1]} with the id ${args[2]} created.`)
     return P.equipTool(tool)
 
 })
+
 Game.command("speed", isAdmin, (caller, args) => {
+    
     args = args.split(" ")
     let P = getPlayer(args[0])
+    if (P == undefined || P === " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
+    caller.topPrint(`Player ${P.username} speed set to ${args[1]}`)
     console.log(caller.username + " is changing " + args[0] + " speed to " + args[1])
     return P.setSpeed(args[1])
 
@@ -234,6 +239,8 @@ Game.command("speed", isAdmin, (caller, args) => {
 
 Game.command("kick", isAdmin, (caller, args) => {
     let P = getPlayer(args)
+    if (P == undefined || P === " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
+    caller.topPrint(`${P.username} was kicked!`)
     return P.kick(`You've been kicked by ${caller.username}`)
 
 })
@@ -241,6 +248,7 @@ Game.command("kick", isAdmin, (caller, args) => {
 // Spectate Command
 Game.command("spectate", isAdmin, (caller, args) => {
     let P = getPlayer(args)
+    if (P == undefined || P === " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
     console.log(`${caller.username} is spectacting ${P.username}`)
     caller.topPrint(`You're now spectating ${P.username} to return do /unspectate`)
     return caller.setCameraObject(P)
@@ -249,21 +257,24 @@ Game.command("spectate", isAdmin, (caller, args) => {
 // Unespectate command
 Game.command("unspectate", isAdmin, (caller, args) => {
     let P = getPlayer(args)
+    if (P == undefined || P === " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
     console.log(`${caller.username} stopped spectating`)
+    caller.topPrint(`You've stopped spectating.`)
+
     return caller.setCameraObject(caller)
 })
 
 // Help Print
 Game.command("commands", isAdmin, (caller, args) => {
-    console.log(Help)
-
-
+    caller.prompt(Help)
 })
 
 // Change values from the score
 Game.command("change", isAdmin, (caller, args) => {
     args = args.split(" ")
     let P = getPlayer(args[0])
+    if (P == undefined || P === " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
+
     console.log(caller.username + " is changing " + args[0] + " Score to " + args[1])
     return P.setScore(args[1])
 
@@ -282,7 +293,9 @@ Game.command("alertall", isAdmin, (caller, args) => {
 Game.command("kill", isAdmin, (caller, args) => {
     args = args.split(" ")
     let P = getPlayer(args[0])
-    if (args[0] == "all") {
+    if (P == undefined || P === " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
+
+    if (args[0] === "all") {
         for (let player of Game.players) {
             player.setHealth(0)
             console.log(player.username + " has died")
@@ -296,8 +309,10 @@ Game.command("kill", isAdmin, (caller, args) => {
 // Admin command, simply push the user to admin.
 
 Game.command("admin", isAdmin, (caller, args) => {
-    if (caller.username == args) return caller.topPrint("You cant admin yourself again lol.")
+    if (caller.username === args) return caller.topPrint("You cant admin yourself again lol.")
     let P = getPlayer(args)
+    if (P == undefined || P === " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
+
     caller.topPrint(`User ${P.username} is now an Administrator.`, 5)
     P.topPrint(`${caller.username} gave you Administrator privileges`, 5)
     return Admins.push(P.username)
@@ -306,8 +321,10 @@ Game.command("admin", isAdmin, (caller, args) => {
 
 // Unadmin command simply takes the value off the array.
 Game.command("unadmin", isAdmin, (caller, args) => {
-    if (caller.username == args) return caller.topPrint("You cant unadmin yourself.")
+    if (caller.username === args) return caller.topPrint("You cant unadmin yourself.")
     let P = getPlayer(args)
+    if (P == undefined || P === " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
+
     caller.topPrint(`User ${P.username} is no longer an administrator.`, 5)
     P.topPrint(`${caller.username} took away your admin privileges.`, 5)
     return Admins.splice(Admins.indexOf(P.username), 1)
@@ -334,13 +351,14 @@ Game.command("b", isAdmin, (caller, args) => {
 
 Game.command("skydive", isAdmin, (caller, args) => {
     let P = getPlayer(args);
-    if (args == "all") {
+    if (P == undefined || P === " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
+
+    if (args === "all") {
         for (let P of Game.players) {
             P.setPosition(new Vector3(P.position.x, P.position.y, P.position.z + 100))
 
         }
     }
-    if (P == undefined || P == " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
     caller.topPrint(`Skydiving`, 3);
     CallerPos = caller.position;
     P.setPosition(new Vector3(P.position.x, P.position.y, P.position.z + 100))
@@ -366,8 +384,8 @@ Game.command("to", isAdmin, (caller, args) => {
 Game.command("bring", isAdmin, (caller, args) => {
     let CallerPos = caller.position;
     let P = getPlayer(args);
+    if (P == undefined || P === " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
     if (P.username == caller.username) return caller.topPrint("You cant Bring yourself!", 3)
-    if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
     caller.topPrint(`Bringing Player ${P.username}`, 5)
     P.setPosition(new Vector3(CallerPos.x, CallerPos.y, CallerPos.z))
 
@@ -379,9 +397,9 @@ Game.command("bring", isAdmin, (caller, args) => {
 // Ban the user, it pushes the username of the user to the banned list.
 Game.command("ban", isAdmin, (caller, args) => {
 
-    if (Admins.includes(caller.username)) {
         args = args.split(" ", 2)
         let P = getPlayer(args[0])
+        if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
 
         if (caller.username == P.username) {
             return caller.topPrint("You cant ban yourself!")
@@ -390,39 +408,35 @@ Game.command("ban", isAdmin, (caller, args) => {
             BannedUsers.push(P.username)
             P.kick(`You've been banned by ${caller.username}\nReason of Ban: ${args[1]} `)
         }
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
-
 })
 // Mute command, mute those who should shut up
 Game.command("mute", isAdmin,(caller, args) => {
-    if (Admins.includes(caller.username)) {
         let VICTIM = getPlayer(args)
+        if (VICTIM == undefined || VICTIM == " ") return caller.bottomPrint("Player not found", 3)
+
         VICTIM.muted = true
         return caller.topPrint(`Player ${VICTIM.username} is now muted.`)
 
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 
 })
 // Unmute the user
 Game.command("unmute", isAdmin,(caller, args) => {
-    if (Admins.includes(caller.username)) {
         let VICTIM = getPlayer(args)
+        if (VICTIM == undefined || VICTIM == " ") return caller.bottomPrint("Player not found", 3)
+
         VICTIM.muted = false
         return caller.topPrint(`Player ${VICTIM.username} is now unmuted.`)
 
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 
 })
 
 // Unban someone
 Game.command("unban", isAdmin,(caller, args) => {
-    if (Admins.includes(caller.username)) {
         if (BannedUsers.includes(args)) {
             removeA(BannedUsers, args)
             return caller.topPrint(`User ${args} is now Unbanned!`, 5)
 
         }
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
 
 })
 
@@ -430,11 +444,8 @@ Game.command("unban", isAdmin,(caller, args) => {
 
 // shut down the game. Somehow it doesnt work wtf
 Game.command("shutdown", isAdmin, (caller, args) => {
-    if (Admins.includes(caller.username)) {
+
         return Game.shutdown()
-
-    } else return caller.topPrint("You cant run that command! Missing privileges: Administrator", 5)
-
 })
 
 

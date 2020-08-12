@@ -1,5 +1,3 @@
-const { default: Vector3 } = require("node-hill/dist/class/Vector3")
-
 const Ver = "V1.4.2.x"
 const Developer = "Edge, Dragonian and Talveka"
 

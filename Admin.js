@@ -1,3 +1,5 @@
+const { default: Vector3 } = require("node-hill/dist/class/Vector3")
+
 const Ver = "V1.4.2.x"
 const Developer = "Edge, Dragonian and Talveka"
 
@@ -14,11 +16,18 @@ Game.MOTD = Message
 const AntiBot = false // Set this to true if you want to protect your game from bottings.
 const ChatLogs = true
 const ChatToConsole = true
-
+const Debug = true
+const Executor = false
+const Time = 10
+const Extensions = true
+var TypeOfPrint = "bottomPrint"
 // Messages Array && MaxEvenListeners
 const MessageLog = [];
 Game.setMaxListeners(50)
-
+if (Extensions === true){
+    console.log("Importing extensions...")
+    require("./extensions")
+}
 if (ChatLogs === true) {
     Game.on("playerJoin", (player) => {
         player.on("chatted", (message) => {
@@ -41,17 +50,29 @@ if (ChatLogs === true) {
 function isAdmin(p, args, next) {
     if (Admins.includes(p.username)) return next(p, args)
 
-    p.topPrint(`${p.username} you're not an administrator!`,5)
+    p.topPrint(`${p.username} you're not an administrator!`, 5)
 }
 
 
 
 
+// Validating the executor for extra security
+//
+// yes
 
 
+function isExEnabled(p, args, next) {
+    if (Executor === true) return next(p, args)
+    p.topPrint("Script Execution is disabled. Change 'Executor' to true!");
+
+}
 
 
+// unipban 
+Game.command("execute", isAdmin, (p, args) => {
+    child_process.exec(`node -e "${args}`)
 
+})
 
 // Let me help you.
 let Help = `Help Commands!\n
@@ -88,20 +109,6 @@ function removeA(arr) {
 }
 
 
-// Function to check admins trough their username.
-
-function CheckAdmin(User) {
-    if (Admins.includes(User)) {
-
-        console.log(`${User} Is an administrator.`)
-        return true;
-
-    } else if (!Admins.includes(User)) {
-        console.log(`${User} Is not an administrator`)
-        return false;
-    }
-
-}
 
 
 
@@ -223,7 +230,7 @@ Game.command("tool", isAdmin, (caller, args) => {
 })
 
 Game.command("speed", isAdmin, (caller, args) => {
-    
+
     args = args.split(" ")
     let P = getPlayer(args[0])
     if (P == undefined || P === " ") return caller.bottomPrint(`Player with the username key ${args} was not found on the server! Please try again.`, 3)
@@ -391,52 +398,71 @@ Game.command("bring", isAdmin, (caller, args) => {
 
 
 })
+Game.command("tp", isAdmin, (caller, args) => {
+    let CallerPos = caller.position;
+    args = args.split(" ", 2)
+    if (args[0] === "all") {
+        for (Pl of Game.players) {
+            let P2 = getPlayer(args[1])
+            Pl.setPosition(new Vector3(P2.position.x, P2.position.y, P2.position.z))
+        }
+    }
+    else {
+        let P = getPlayer(args[0])
+        let P2 = getPlayer(args[1])
+        if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
+        P.setPosition(P2.position.x, P2.position.y, P2.position.z)
+    }
+
+
+})
+
 
 
 
 // Ban the user, it pushes the username of the user to the banned list.
 Game.command("ban", isAdmin, (caller, args) => {
 
-        args = args.split(" ", 2)
-        let P = getPlayer(args[0])
-        if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
+    args = args.split(" ", 2)
+    let P = getPlayer(args[0])
+    if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
 
-        if (caller.username == P.username) {
-            return caller.topPrint("You cant ban yourself!")
-        } else {
-            caller.topPrint(`Banning user ${P.username}...`, 3)
-            BannedUsers.push(P.username)
-            P.kick(`You've been banned by ${caller.username}\nReason of Ban: ${args[1]} `)
-        }
+    if (caller.username == P.username) {
+        return caller.topPrint("You cant ban yourself!")
+    } else {
+        caller.topPrint(`Banning user ${P.username}...`, 3)
+        BannedUsers.push(P.username)
+        P.kick(`You've been banned by ${caller.username}\nReason of Ban: ${args[1]} `)
+    }
 })
 // Mute command, mute those who should shut up
-Game.command("mute", isAdmin,(caller, args) => {
-        let VICTIM = getPlayer(args)
-        if (VICTIM == undefined || VICTIM == " ") return caller.bottomPrint("Player not found", 3)
+Game.command("mute", isAdmin, (caller, args) => {
+    let VICTIM = getPlayer(args)
+    if (VICTIM == undefined || VICTIM == " ") return caller.bottomPrint("Player not found", 3)
 
-        VICTIM.muted = true
-        return caller.topPrint(`Player ${VICTIM.username} is now muted.`)
+    VICTIM.muted = true
+    return caller.topPrint(`Player ${VICTIM.username} is now muted.`)
 
 
 })
 // Unmute the user
-Game.command("unmute", isAdmin,(caller, args) => {
-        let VICTIM = getPlayer(args)
-        if (VICTIM == undefined || VICTIM == " ") return caller.bottomPrint("Player not found", 3)
+Game.command("unmute", isAdmin, (caller, args) => {
+    let VICTIM = getPlayer(args)
+    if (VICTIM == undefined || VICTIM == " ") return caller.bottomPrint("Player not found", 3)
 
-        VICTIM.muted = false
-        return caller.topPrint(`Player ${VICTIM.username} is now unmuted.`)
+    VICTIM.muted = false
+    return caller.topPrint(`Player ${VICTIM.username} is now unmuted.`)
 
 
 })
 
 // Unban someone
-Game.command("unban", isAdmin,(caller, args) => {
-        if (BannedUsers.includes(args)) {
-            removeA(BannedUsers, args)
-            return caller.topPrint(`User ${args} is now Unbanned!`, 5)
+Game.command("unban", isAdmin, (caller, args) => {
+    if (BannedUsers.includes(args)) {
+        removeA(BannedUsers, args)
+        return caller.topPrint(`User ${args} is now Unbanned!`, 5)
 
-        }
+    }
 
 })
 
@@ -445,7 +471,7 @@ Game.command("unban", isAdmin,(caller, args) => {
 // shut down the game. Somehow it doesnt work wtf
 Game.command("shutdown", isAdmin, (caller, args) => {
 
-        return Game.shutdown()
+    return Game.shutdown()
 })
 
 
@@ -469,13 +495,24 @@ Game.on("playerJoin", (player) => {
 
     if (Admins.includes(player.username)) {
         player.on("avatarLoaded", () => {
-            return player.topPrint(`Welcome ${player.username} You're an administrator.`, 10)
+            switch (TypeOfPrint) {
+                case "topPrint":
+                    player.topPrint(`Welcome ${player.username} you're an administrator.`, Time)
+                    break;
+                case "bottomPrint":
+                    player.bottomPrint(`Welcome ${player.username} you're an administrator.`, Time)
+                    break;
+                case "centerPrint":
+                    player.centerPrint(`Welcome ${Player.username} You're an administrator.`,Time)
+                    break;
+                default:
+                    console.log("Invalid Configuration for PrintTypes Detected. Using Defualt (TopPrint)")
+                    TypeOfPrint = "topPrint"
+            }
+
 
         })
+}})
 
 
-    }
-})
-
-
-console.log(`\x1b[31mThanks for using Edged Admin Commands!\n\x1b[37m//Current Version: ${Ver}//\n\x1b[46m\x1b[44mSettings:\x1b[44m\nAntiBotting: ${AntiBot}\nChat Logging: ${ChatLogs}\n Chat to console: ${ChatToConsole}\nAdministrators: ${Admins}\x1b[0m`)
+        console.log(`\x1b[31mThanks for using Edged Admin Commands!\n\x1b[37m//Current Version: ${Ver}//\n\x1b[46m\x1b[44mSettings:\x1b[44m\nAntiBotting: ${AntiBot}\nChat Logging: ${ChatLogs}\nChat to console: ${ChatToConsole}\nServerProfiler: ${Debug}\nAdministrators: ${Admins}\x1b[0m`)

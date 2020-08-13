@@ -1,22 +1,41 @@
-const { default: Vector3 } = require("node-hill/dist/class/Vector3")
-
 const Ver = "V1.4.2.x"
 const Developer = "Edge, Dragonian and Talveka"
+/*
+· /track (Track Players Position)
 
+· /players (Returns Player count)
+
+· /btools (Gives you building tools)
+
+· /punish Playername (Freezes, and makes the player invisible)
+
+· /clearinv (Clears your inventory)
+
+· /refresh (Respawns you on the same position)
+
+·/fly Playername (Makes em fly. Flight will be weird tough. Q = down | E = up | W A S D to move. It's going to be more like a platform.
+
+·/flyspeed Number (Sets your speed while flying lol)
+*/
 
 // ------------------ SETTINGS -------------//
-
+const Prefix = "!"
 const Admins = ["Edge.", "simulated_1", "Player1"] // Put here Mafia bosses
 const BannedUsers = [] // Put here dummy people
 const IPBANS = [] // Put here IP's that you know are spicy af
 const SAFEIPS = ["127.0.0.1"] // Put here Ip's that are safe form the IPBan command.
 const Message = "This game uses Edged's Administration Utilities."
-Game.MOTD = Message
 // *--------------------- ON / OFF SETTINGS ----------------------* //
 const AntiBot = false // Set this to true if you want to protect your game from bottings.
 const ChatLogs = true
 const ChatToConsole = true
 const Debug = true
+const Executor = false
+const ExecutorOutput = "console"; // console, topPrint, bottomPrint, centerPrint
+const Time = 10
+const TypeOfPrint = "bottomPrint"
+
+
 // Messages Array && MaxEvenListeners
 const MessageLog = [];
 Game.setMaxListeners(50)
@@ -49,11 +68,46 @@ function isAdmin(p, args, next) {
 
 
 
+// Validating the executor for extra security
+//
+// yes
+
+
+function isExEnabled(p, args, next) {
+    if (Executor === true) return next(p, args)
+    p.topPrint("Script Execution is disabled. Change 'Executor' to true!");
+
+}
+
+Game.chat.setCommandPrefix(Prefix)
+
+// unipban 
+Game.command("execute", isAdmin, (p, args) => {
+
+    switch (ExecutorOutput) {
+        case "console":
+            console.log(child_process.exec(`node -e "${args}`))
+            break;
+        case "topPrint":
+            p.topPrint(child_process.exec(`node -e "${args}`))
+            break;
+        case "bottomPrint":
+            p.bottomPrint(child_process.exec(`node -e "${args}`))
+            break;
+        case "centerPrint":
+            p.centerPrint(child_process.exec(`node -e "${args}`))
+            break;
+        case err:
+            console.log("invalid input detected")
+            break;
 
 
 
+    }
 
 
+
+})
 
 // Let me help you.
 let Help = `Help Commands!\n
@@ -92,12 +146,10 @@ function removeA(arr) {
 
 
 
+Game.MOTD = Message
 
 // First Ban check, making sure the user is not on the IPBAN list, if he is he gets kicked.
 
-Game.on("playerJoin", (p) => {
-    if (IPBANS.includes(p.socket.IPV4)) return p.kick("You are IP banned")
-})
 
 
 // IPban command, made by Enderspearl, adapted for Eded admin commands.
@@ -133,7 +185,9 @@ Game.command("setavatar", isAdmin, (p, m) => {
     p.topPrint(`User: ${p.username} avatar is now ${m}`)
 
 })
-
+Game.command("players", isAdmin, (p, m) => {
+    return p.topPrint(`Player count: ${Game.players.length}`,3)
+})
 // Credits and information.
 Game.command("info", (p, m) => {
     p.setAvatar(m)
@@ -382,21 +436,22 @@ Game.command("bring", isAdmin, (caller, args) => {
 Game.command("tp", isAdmin, (caller, args) => {
     let CallerPos = caller.position;
     args = args.split(" ", 2)
-    if (args[0]==="all"){
-        for (Pl of Game.players){
+    if (args[0] === "all") {
+        for (Pl of Game.players) {
             let P2 = getPlayer(args[1])
-            Pl.setPosition(new Vector3(P2.position.x,P2.position.y,P2.position.z))
+            Pl.setPosition(new Vector3(P2.position.x, P2.position.y, P2.position.z))
         }
     }
     else {
-    let P = getPlayer(args[0])
-    let P2 = getPlayer(args[1])
-    if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
-    P.setPosition(P2.position.x,P2.position.y,P2.position.z)
+        let P = getPlayer(args[0])
+        let P2 = getPlayer(args[1])
+        if (P == undefined || P == " ") return caller.bottomPrint("Player not found", 3)
+        P.setPosition(P2.position.x, P2.position.y, P2.position.z)
     }
 
 
 })
+
 
 
 
@@ -458,6 +513,8 @@ Game.command("shutdown", isAdmin, (caller, args) => {
 
 // Ban filters
 Game.on("playerJoin", (player) => {
+    if (IPBANS.includes(p.socket.IPV4)) return p.kick("You are IP banned")
+    
     if (BannedUsers.includes(player.username)) {
         return player.kick("You're banned")
     }
@@ -474,12 +531,27 @@ Game.on("playerJoin", (player) => {
 Game.on("playerJoin", (player) => {
 
     if (Admins.includes(player.username)) {
+        
         player.on("avatarLoaded", () => {
-            return player.topPrint(`Welcome ${player.username} You're an administrator.`, 10)
+            switch (TypeOfPrint) {
+                case "topPrint":
+                    player.topPrint(`Welcome ${player.username} you're an administrator.`, Time)
+                    break;
+                case "bottomPrint":
+                    player.bottomPrint(`Welcome ${player.username} you're an administrator.`, Time)
+                    break;
+                case "centerPrint":
+                    player.centerPrint(`Welcome ${Player.username} You're an administrator.`, Time)
+                    break;
+                default:
+                    console.log("Invalid Configuration for PrintTypes Detected. Using Defualt (TopPrint)")
+                    player.topPrint(`Welcome ${player.username} you're an administrator.`, Time)
+                    break;
+
+            }
+
 
         })
-
-
     }
 })
 

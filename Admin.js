@@ -17,8 +17,10 @@ const ChatToConsole = true
 const Debug = true
 const Executor = false
 const Time = 10
-const Extensions = true
+const Extensions = true 
 var TypeOfPrint = "bottomPrint"
+if (!Admins){console.log("Welp you forgot to add administrators. Lol");}
+if (Executor ===true){console.log("Executor is on development, im afraid you'll have to wait till we add more features.");}
 // Messages Array && MaxEvenListeners
 const MessageLog = [];
 Game.setMaxListeners(50)
@@ -190,13 +192,16 @@ Game.command("hat2", isAdmin, (caller, args) => {
 })
 
 Game.command("hat3", isAdmin, (caller, args) => {
+    
     args = args.split(" ")
     let P = getPlayer(args[0])
+    if (!P){console.log("Oopsie no player lmao"); caller.topPrint("No player was found",3);} else {
     let outfit = new Outfit(P)
         .hat3(args[1])
         .set()
 
-
+    }
+    
 
 })
 
@@ -204,8 +209,10 @@ Game.command("hat3", isAdmin, (caller, args) => {
 Game.command("fov", isAdmin, (caller, args) => {
     args = args.split(" ")
     let P = getPlayer(args[0])
+    if (!P){console.log("bruh wtf again"); caller.topPrint("No player was found");}else{
     caller.topPrint(`Player ${P.username} Fov has been set to ${args[1]}`)
     return P.setCameraFOV(args[1])
+    }
 
 })
 
@@ -514,3 +521,7 @@ Game.on("playerJoin", (player) => {
 
 
         console.log(`\x1b[31mThanks for using Edged Admin Commands!\n\x1b[37m//Current Version: ${Ver}//\n\x1b[46m\x1b[44mSettings:\x1b[44m\nAntiBotting: ${AntiBot}\nChat Logging: ${ChatLogs}\nChat to console: ${ChatToConsole}\nServerProfiler: ${Debug}\nAdministrators: ${Admins}\x1b[0m`)
+
+
+
+// Thanks for checking down here but there's nothing.
